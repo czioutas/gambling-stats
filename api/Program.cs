@@ -16,11 +16,16 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAstro", builder =>
     {
-        builder.WithOrigins("http://localhost:4322")
+        builder.WithOrigins(
+                "http://localhost:4321",
+                "http://localhost:9070"
+               )
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
 });
+
+builder.WebHost.UseUrls("http://*:80");
 
 builder.Services.AddOpenApi();
 

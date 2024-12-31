@@ -74,7 +74,7 @@ const BettingChart = () => {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:5267/play', {
+      const response = await fetch('http://localhost:9090/play', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

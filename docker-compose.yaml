@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "9070:4321"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "9090:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - gambling-network
+    restart: unless-stopped
+
+networks:
+  gambling-network:
+    driver: bridge
+
+volumes:
+  gambling-db-data:
+    driver: local
