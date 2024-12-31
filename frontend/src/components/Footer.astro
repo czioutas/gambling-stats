@@ -1,0 +1,85 @@
+---
+import { Icon } from "astro-icon/components";
+const year = new Date().getFullYear();
+---
+
+<footer class="footer"></footer>
+
+<style>
+  .footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 3rem 1rem 1rem;
+    margin-top: 4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .footer-section h3 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .social-links a {
+    color: #fff;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .social-links a:hover {
+    opacity: 1;
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-nav a {
+    color: #fff;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .footer-nav a:hover {
+    opacity: 1;
+  }
+
+  .copyright {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .copyright p {
+    color: #fff;
+    opacity: 0.6;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .social-links {
+      justify-content: center;
+    }
+  }
+</style>

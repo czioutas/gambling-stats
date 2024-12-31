@@ -1,0 +1,95 @@
+---
+// src/components/MainNav.astro
+---
+
+<nav class="nav-container">
+  <button class="menu-toggle" aria-label="Toggle menu" id="menuButton">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <ul class="nav-items" id="navItems">
+    <li><a href="/">Home</a></li>
+  </ul>
+</nav>
+
+<style>
+  .nav-container {
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .nav-items {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .nav-items a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.9rem;
+    transition: color 0.3s ease;
+  }
+
+  .nav-items a:hover {
+    color: #888;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .menu-toggle span {
+    display: block;
+    width: 25px;
+    height: 2px;
+    background-color: white;
+    margin: 5px 0;
+    transition: 0.3s;
+  }
+
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+      position: relative;
+    }
+
+    .nav-items {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+    }
+
+    .nav-items.active {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  const menuButton = document.getElementById("menuButton");
+  const navItems = document.getElementById("navItems");
+
+  if (menuButton && navItems) {
+    menuButton.addEventListener("click", () => {
+      navItems.classList.toggle("active");
+    });
+  }
+</script>

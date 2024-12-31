@@ -1,0 +1,49 @@
+---
+import MainNav from "../components/MainNav.astro";
+import Footer from "../components/Footer.astro";
+import "@/styles/globals.css";
+
+interface Props {
+  showSocial?: boolean;
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Lavishly+Yours&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <meta name="description" content="Gambling Stats" />
+    <meta name="keywords" content="" />
+    <meta property="og:title" content="Gambling Stats" />
+    <meta
+      property="og:description"
+      content="Electronic Music Artist from Berlin"
+    />
+
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Gambling Stats</title>
+  </head>
+  <body>
+    <MainNav />
+    <slot />
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  html,
+  body {
+    margin: 0;
+    min-height: 100vh;
+    width: 100%;
+  }
+</style>
