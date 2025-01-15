@@ -16,16 +16,10 @@ services:
       context: .
       dockerfile: api/Dockerfile
     ports:
-      - "9090:80"
+      - "9091:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-    networks:
-      - gambling-network
     restart: unless-stopped
-
-networks:
-  gambling-network:
-    driver: bridge
 
 volumes:
   gambling-db-data:

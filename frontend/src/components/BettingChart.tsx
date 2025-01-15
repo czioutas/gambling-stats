@@ -115,7 +115,7 @@ const BettingChart = ({
         initialBetPercentage: params.initialBetPercentage ? Number(params.initialBetPercentage) : undefined
       };
 
-      const response = await fetch('http://localhost:80/play', {
+      const response = await fetch('http://localhost:9091/play', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
