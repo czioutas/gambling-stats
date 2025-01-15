@@ -128,12 +128,9 @@ const BettingChart = ({
           : undefined,
       };
 
-      const apiUrl =
-        process.env.NODE_ENV === "production"
-          ? navigator.platform === "Linux"
+      const apiUrl = navigator.platform === "Linux"
             ? "http://api:9091"
             : "http://localhost:9091"
-          : "http://localhost:9091"; // Use localhost for local development
 
       const response = await fetch(apiUrl + "/play", {
         method: "POST",
