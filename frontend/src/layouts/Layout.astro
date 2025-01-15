@@ -2,6 +2,7 @@
 import MainNav from "../components/MainNav.astro";
 import Footer from "../components/Footer.astro";
 import "@/styles/globals.css";
+import Disclaimer from "@/components/Disclaimer.astro";
 
 interface Props {
   showSocial?: boolean;
@@ -33,17 +34,24 @@ interface Props {
     <title>Gambling Stats</title>
   </head>
   <body>
-    <MainNav />
-    <slot />
-    <Footer />
+    <div class="min-h-screen flex flex-col">
+      <div
+        class="min-h-[40vh] flex flex-col items-center justify-center bg-gray-100"
+      >
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 text-center">
+          Gambling Stats
+        </h1>
+        <h2
+          class="text-2xl md:text-3xl font-semibold text-gray-600 text-center"
+        >
+          The house always wins
+        </h2>
+        <MainNav />
+      </div>
+      <slot />
+      <Footer />
+    </div>
   </body>
 </html>
 
-<style is:global>
-  html,
-  body {
-    margin: 0;
-    min-height: 100vh;
-    width: 100%;
-  }
-</style>
+<style is:global></style>

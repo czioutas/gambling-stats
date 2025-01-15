@@ -1,19 +1,35 @@
-using Gambling.Library;
-using Gambling.Library.Games;
-
 namespace Gambling.Library;
 
 public class Gambler
 {
     public readonly IBettingStrategy strategy;
     public decimal Balance { get; set; }
-    private decimal _startingBetAmount;
+    public decimal? InitialBet { get; set; }
+    public decimal? InitialBetPercentage { get; set; }
 
-    public Gambler(IBettingStrategy strategy, decimal initialBalance)
+    public Gambler(IBettingStrategy strategy, decimal initialBalance, decimal? initialBet, decimal? initialBetPercentage)
     {
         this.strategy = strategy;
         this.Balance = initialBalance;
-        this._startingBetAmount = Balance * 0.01m;
+        this.InitialBet = initialBet;
+        this.InitialBetPercentage = initialBetPercentage;
+
+        if (this.InitialBet is null && this.InitialBetPercentage is null)
+        {
+            throw new ArgumentException("InitialBet or InitialBetPercentage must be set.");
+        }
+    }
+
+    private decimal GetStartingBet()
+    {
+        if (InitialBet.HasValue)
+        {
+            return InitialBet.Value;
+        }
+        else
+        {
+            return this.Balance * this.InitialBetPercentage.Value;
+        }
     }
 
 
@@ -24,7 +40,7 @@ public class Gambler
         if (lastBet is null)
         {
             newBet = new(
-               Balance * 0.01m,
+               GetStartingBet(),
                strategy.GetStrategy()
            );
 
@@ -32,8 +48,7 @@ public class Gambler
         }
         else
         {
-            var bet = strategy.Decide(lastBet, this._startingBetAmount, this.Balance);
-
+            var bet = strategy.Decide(lastBet, GetStartingBet(), this.Balance);
             return bet;
         }
     }

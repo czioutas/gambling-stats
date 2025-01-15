@@ -11,7 +11,15 @@ public enum Strategies
     [JsonPropertyName("errorProneModifiedMartingale")]
     ErrorProneModifiedMartingale,
     [JsonPropertyName("errorProneMartingale")]
-    ErrorProneMartingale
+    ErrorProneMartingale,
+    [JsonPropertyName("flatBetting")]
+    FlatBetting,
+    [JsonPropertyName("reverseMartingaleParoli")]
+    ReverseMartingaleParoli,
+    [JsonPropertyName("fibonacciSystem")]
+    FibonacciSystem,
+    [JsonPropertyName("kellyCriterion")]
+    KellyCriterion
 }
 
 public interface IBettingStrategy

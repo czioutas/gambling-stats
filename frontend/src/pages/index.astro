@@ -1,14 +1,180 @@
 ---
 // src/pages/index.astro
+import MainNav from "@/components/MainNav.astro";
 import Layout from "../layouts/Layout.astro";
-import MainNav from "../components/MainNav.astro";
 import BettingChart from "@/components/BettingChart";
+import Disclaimer from "@/components/Disclaimer.astro";
 ---
 
 <Layout>
-  <div class="container mx-auto">
-    <BettingChart client:load />
-  </div>
-</Layout>
+  <div class="max-w-7xl mx-auto">
+    <div class="mx-auto">
+      <img
+        src="/zoiberg.webp"
+        alt="Zoiberg"
+        class="rounded-lg shadow-lg w-full mb-8"
+      />
+      <div class="space-y-4">
+        <h2 class="text-4xl font-bold">Gambling</h2>
+        <Disclaimer />
+        <p class="text-gray-700">
+          For New Year, we decided to gamble a small amount, it is common for
+          people to play blackjack or similar where I come from. However as I am
+          too lazy to count cards, I decided to play Plinko.
+        </p>
+        <p class="text-gray-700">
+          Plinko is a game where a ball or disc is dropped from the top of a
+          pegged board. As it falls, the ball bounces off pegs in an
+          unpredictable pattern until it lands in one of several slots at the
+          bottom. Each slot has a different value or multiplier, determining the
+          payout. The game's appeal comes from its simple concept but
+          unpredictable nature, as the ball's path can change dramatically with
+          each bounce.
+        </p>
+        <p class="text-gray-700">
+          Originally popularized by the TV show "The Price is Right," Plinko has
+          become a popular casino and online gambling game. The physics-based
+          gameplay creates an engaging visual experience as players watch the
+          ball make its journey down the board.
+        </p>
+        <p class="text-gray-700">
+          But if you play online, how do you play Plinko when there is no
+          physical ball or pegs? Online Plinko uses a random number generator
+          (RNG) to simulate the ball's path. The RNG ensures each bounce is
+          completely random and unpredictable, just like in the physical
+          version. Each time the ball hits a peg, the RNG determines the angle
+          and therefore the direction of the ball's next bounce. The ball's
+          final position is determined by the RNG when it reaches the bottom of
+          the board, thus the resut of the game.
+        </p>
+        <p class="text-gray-700">
+          In layman's terms, you rely on the computer to randomly select if the
+          ball will go left or right and eventually to the bottom.
+        </p>
+        <p class="text-gray-700">
+          The games end goal is to get a multiplier of your bet, which can be
+          "negative" 0.5 multiplier or "positive" 2x multiplier. This depends on
+          a few factors like Risk and number of rows the ball has to go through.
+        </p>
+        <img
+          src="https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/0fe8eabf1827a48deb7853ab9531c6c4/large.gif"
+        />
 
-<style></style>
+        <h2 class="text-4xl font-bold">Simulation</h2>
+
+        <p class="text-gray-700">
+          After a few quick plays, I personally thought of using the following
+          strategy: Start with 1% of my total balance as a bet. If I lose,
+          double the bet. If I win, go back to the initial bet and if I get 1x,
+          I would call it a stalemate and keep the same bet amount. I later
+          found out that this is called the Martingale strategy, except the
+          "stalemate" part.
+        </p>
+
+        <p class="text-gray-700">
+          In theory, as long as you have a large enough balance, you should
+          eventually return to your original bet. However, the Martingale
+          strategy is not foolproof. If you hit a losing streak, you could
+          quickly run out of money or reach the table's betting limit.
+        </p>
+        <p class="text-gray-700">
+          What I wanted to find out now was... when is that limit reached? And
+          what would be the ideal starting bet, is 1% too much or too little?
+        </p>
+        <p class="text-gray-700">
+          So I wrote bellow a simulator so I can play without spending money and
+          also see in a graph how the bets will go. You are free play around,
+          and if you dont know what the last 3 inputs are dont worry about it.
+        </p>
+
+        <h2 class="text-4xl font-bold">Insights</h2>
+        <h3 class="text-2xl font-bold">Modified Martingale vs Martingale</h3>
+        <p class="text-gray-700">
+          As we mentioned earlier, my modified Martingale strategy differs
+          because it considers stalemates. This means that if I get a 1x
+          multiplier, I will keep the same bet amount. This is a more
+          conservative approach compared to the traditional Martingale strategy,
+          which doubles the bet after each loss. My assumption was that this
+          will allow for better returns, however what it does is, allow the
+          player to continue playing longer but less loss but at the same time
+          lower "high volume" gains.
+        </p>
+
+        <p class="text-gray-700">
+          Let's compare the two bellow. Martingale has an obvious higher final
+          balance but thats because the bets are in the tens while in Modified
+          it allows you to play hundreds of times more. You end up in break
+          point where you can no longer double your bet, and that is where the
+          Martingale strategy fails. The modified version just postpones the
+          break point.
+        </p>
+        <p class="text-gray-700">
+          Even adding a chaos factor did not change the outcome to any great
+          effect. I allowed the strategy to make a mistake in any of the steps
+          of the strategy. Those mistakes were in the range of 1-2% which is
+          reflected in the difference of the balance in the end, without any
+          further sideeffects.
+        </p>
+
+        <p class="text-gray-700"></p>
+
+        <label class="italic">Modified Martingale</label>
+
+        <BettingChart
+          client:load
+          showForm={false}
+          serverSeed="YOUR_SEED"
+          clientSeed="YOUR_CLIENT_SEED"
+          initialBalance="1000"
+          nonce="1"
+          strategy={"martingale"}
+          game={"plinko"}
+          initialBet="10"
+        />
+
+        <label class="italic">Martingale</label>
+        <BettingChart
+          client:load
+          showForm={false}
+          serverSeed="YOUR_SEED"
+          clientSeed="YOUR_CLIENT_SEED"
+          initialBalance="1000"
+          nonce="1"
+          strategy={"modifiedmartingale"}
+          game={"plinko"}
+          initialBet="10"
+        />
+
+        <label class="italic">Martingale with Error</label>
+        <BettingChart
+          client:load
+          showForm={false}
+          serverSeed="YOUR_SEED"
+          clientSeed="YOUR_CLIENT_SEED"
+          initialBalance="1000"
+          nonce="1"
+          strategy={"errorpronemodifiedmartingale"}
+          game={"plinko"}
+          initialBet="10"
+        />
+
+        <h2 class="text-4xl font-bold">Technical Details</h2>
+        <p class="text-gray-700">
+          But what is the "Server Seed" or "Client Seed"?
+        </p>
+
+        <p class="text-gray-700"></p>
+
+        <h2 class="text-4xl font-bold">Using the API</h2>
+        <p class="text-gray-700">
+          The API has a limit based on how many potential bets will be played.
+          If you are interested to remove that cap, contact me.
+        </p>
+
+        <p class="text-gray-700"></p>
+      </div>
+    </div>
+  </div>
+
+  <style></style>
+</Layout>

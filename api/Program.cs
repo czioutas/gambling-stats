@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Gambling.API;
 using Gambling.Library;
 using Gambling.Library.Games;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNameCaseInsensitive = true;
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddCors(options =>
 {
@@ -37,8 +40,20 @@ app.MapOpenApi();
 
 app.UseHttpsRedirection();
 
-app.MapPost("/play", (GameInputDto gameInputDto) =>
+app.MapPost("/play", (IMemoryCache cache, GameInputDto gameInputDto) =>
 {
+    string cacheKey = JsonSerializer.Serialize(gameInputDto);
+
+    if (cache.TryGetValue(cacheKey, out Stats cachedStats))
+    {
+        return Results.Ok(cachedStats);
+    }
+
+    if (gameInputDto.InitialBet.HasValue && 1000 < gameInputDto.InitialBalance / gameInputDto.InitialBet.Value)
+    {
+        return Results.BadRequest("Initial bet cannot exceed 1000x the balance");
+    }
+
     var randomness = new ProvablyFairRandomness(
         serverSeed: gameInputDto.ServerSeed,
         clientSeed: gameInputDto.ClientSeed,
@@ -61,20 +76,43 @@ app.MapPost("/play", (GameInputDto gameInputDto) =>
         case Strategies.ErrorProneMartingale:
             bettingStrategy = new ErrorProneMartingaleStrategy();
             break;
+        case Strategies.FlatBetting:
+            bettingStrategy = new FlatBettingStrategy();
+            break;
+        case Strategies.FibonacciSystem:
+            bettingStrategy = new FibonacciStrategy();
+            break;
+        case Strategies.KellyCriterion:
+            return Results.BadRequest("No Strategy Not Implemented yet.");
+        case Strategies.ReverseMartingaleParoli:
+            bettingStrategy = new ReverseMartingaleStrategy();
+            break;
         default:
             return Results.BadRequest("No Strategy Found.");
     }
 
-    decimal initialBalance = decimal.Parse(gameInputDto.InitialBalance);
+    try
+    {
+        Gambler gambler = new Gambler(bettingStrategy, gameInputDto.InitialBalance, gameInputDto.InitialBet, gameInputDto.InitialBetPercentage);
 
-    Gambler gambler = new Gambler(bettingStrategy, initialBalance);
+        var game = new Plinko(randomness, rows: 8, risk: Risk.Low);
 
-    var game = new Plinko(randomness, rows: 8, risk: Risk.Low);
+        Setup setup = new Setup(game, gambler);
+        Stats stats = setup.Run();
 
-    Setup setup = new Setup(game, gambler);
-    Stats stats = setup.Run();
+        cache.Set(cacheKey, stats);
 
-    return Results.Ok(stats);
+        return Results.Ok(stats);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+    catch (Exception)
+    {
+        return Results.BadRequest("An error occured");
+    }
+
 })
 .WithName("Play");
 
