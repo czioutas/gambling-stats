@@ -40,6 +40,8 @@ app.MapOpenApi();
 
 app.UseHttpsRedirection();
 
+app.MapGet("/", () => "1");
+
 app.MapPost("/play", (IMemoryCache cache, GameInputDto gameInputDto) =>
 {
     string cacheKey = JsonSerializer.Serialize(gameInputDto);
