@@ -9,6 +9,7 @@ services:
       - "9070:4321"
     environment:
       - NODE_ENV=production
+      - API_URL=http://api:9091
     restart: unless-stopped
 
   api:

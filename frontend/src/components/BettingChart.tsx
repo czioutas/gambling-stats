@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface GameParams {
   serverSeed: string;
@@ -73,21 +82,23 @@ const BettingChart = ({
   strategy: propStrategy,
   game: propGame,
   initialBet: propInitialBet,
-  initialBetPercentage: propInitialBetPercentage
+  initialBetPercentage: propInitialBetPercentage,
 }: BettingChartProps) => {
   const [data, setData] = useState<Bet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [params, setParams] = useState<GameParams>({
     serverSeed: propServerSeed || "ZME1CHY7DD",
-    clientSeed: propClientSeed || "f427ededbc8e385d285ffee7a61930721e6c044d46b6445c1b7e74575d06caac",
+    clientSeed:
+      propClientSeed ||
+      "f427ededbc8e385d285ffee7a61930721e6c044d46b6445c1b7e74575d06caac",
     initialBalance: propInitialBalance || "1000.00",
     nonce: propNonce || "229",
     strategy: propStrategy || Strategies.ModifiedMartingale,
     game: propGame || GamblingGames.Pliko,
     initialBet: propInitialBet || "10",
-    initialBetPercentage: propInitialBetPercentage || ""
+    initialBetPercentage: propInitialBetPercentage || "",
   });
 
   React.useEffect(() => {
@@ -97,43 +108,55 @@ const BettingChart = ({
   }, []); // Only run once on mount when showForm is false
 
   const handleParamChange = (field: keyof GameParams, value: string) => {
-    setParams(prev => ({
+    setParams((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handlePlay = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const requestBody = {
         ...params,
         nonce: Number(params.nonce),
         initialBet: params.initialBet ? Number(params.initialBet) : undefined,
-        initialBetPercentage: params.initialBetPercentage ? Number(params.initialBetPercentage) : undefined
+        initialBetPercentage: params.initialBetPercentage
+          ? Number(params.initialBetPercentage)
+          : undefined,
       };
 
-      const response = await fetch('http://localhost:9091/play', {
-        method: 'POST',
+      const apiUrl =
+        process.env.NODE_ENV === "production"
+          ? navigator.platform === "Linux"
+            ? "http://api:9091"
+            : "http://localhost:9091"
+          : "http://localhost:9091"; // Use localhost for local development
+
+      const response = await fetch(apiUrl + "/play", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status} - ${errorText}`
+        );
       }
 
       const result: GameResponse = await response.json();
       setData(result.bets);
     } catch (err) {
-      console.error('Fetch error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error("Fetch error:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "An unknown error occurred";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -141,11 +164,11 @@ const BettingChart = ({
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(value);
   };
 
@@ -168,7 +191,9 @@ const BettingChart = ({
                   type="number"
                   step="0.01"
                   value={params.initialBalance}
-                  onChange={(e) => handleParamChange('initialBalance', e.target.value)}
+                  onChange={(e) =>
+                    handleParamChange("initialBalance", e.target.value)
+                  }
                 />
               </div>
 
@@ -179,18 +204,24 @@ const BettingChart = ({
                   type="number"
                   step="0.01"
                   value={params.initialBet}
-                  onChange={(e) => handleParamChange('initialBet', e.target.value)}
+                  onChange={(e) =>
+                    handleParamChange("initialBet", e.target.value)
+                  }
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="initialBetPercentage">Initial Bet Percentage</Label>
+                <Label htmlFor="initialBetPercentage">
+                  Initial Bet Percentage
+                </Label>
                 <Input
                   id="initialBetPercentage"
                   type="number"
                   step="0.01"
                   value={params.initialBetPercentage}
-                  onChange={(e) => handleParamChange('initialBetPercentage', e.target.value)}
+                  onChange={(e) =>
+                    handleParamChange("initialBetPercentage", e.target.value)
+                  }
                 />
               </div>
 
@@ -198,7 +229,7 @@ const BettingChart = ({
                 <Label htmlFor="game">Game</Label>
                 <Select
                   value={params.game}
-                  onValueChange={(value) => handleParamChange('game', value)}
+                  onValueChange={(value) => handleParamChange("game", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Game" />
@@ -206,18 +237,21 @@ const BettingChart = ({
                   <SelectContent>
                     {Object.values(GamblingGames).map((game) => (
                       <SelectItem key={game} value={game}>
-                        {game.charAt(0).toUpperCase() + game.slice(1).replace(/([A-Z])/g, ' $1')}
+                        {game.charAt(0).toUpperCase() +
+                          game.slice(1).replace(/([A-Z])/g, " $1")}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="strategy">Strategy</Label>
                 <Select
                   value={params.strategy}
-                  onValueChange={(value) => handleParamChange('strategy', value)}
+                  onValueChange={(value) =>
+                    handleParamChange("strategy", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select strategy" />
@@ -225,7 +259,8 @@ const BettingChart = ({
                   <SelectContent>
                     {Object.values(Strategies).map((strategy) => (
                       <SelectItem key={strategy} value={strategy}>
-                        {strategy.charAt(0).toUpperCase() + strategy.slice(1).replace(/([A-Z])/g, ' $1')}
+                        {strategy.charAt(0).toUpperCase() +
+                          strategy.slice(1).replace(/([A-Z])/g, " $1")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -239,16 +274,20 @@ const BettingChart = ({
                 <Input
                   id="serverSeed"
                   value={params.serverSeed}
-                  onChange={(e) => handleParamChange('serverSeed', e.target.value)}
+                  onChange={(e) =>
+                    handleParamChange("serverSeed", e.target.value)
+                  }
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="clientSeed">Client Seed</Label>
                 <Input
                   id="clientSeed"
                   value={params.clientSeed}
-                  onChange={(e) => handleParamChange('clientSeed', e.target.value)}
+                  onChange={(e) =>
+                    handleParamChange("clientSeed", e.target.value)
+                  }
                 />
               </div>
 
@@ -257,18 +296,18 @@ const BettingChart = ({
                 <Input
                   id="nonce"
                   value={params.nonce}
-                  onChange={(e) => handleParamChange('nonce', e.target.value)}
+                  onChange={(e) => handleParamChange("nonce", e.target.value)}
                 />
               </div>
             </div>
 
             <div className="mt-4">
-              <Button 
+              <Button
                 onClick={handlePlay}
                 disabled={loading}
                 className="w-full md:w-auto"
               >
-                {loading ? 'Playing...' : 'Play Game'}
+                {loading ? "Playing..." : "Play Game"}
               </Button>
             </div>
           </CardContent>
@@ -280,7 +319,9 @@ const BettingChart = ({
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="p-4 border rounded-lg bg-white shadow">
               <h3 className="text-lg font-semibold mb-2">Final Balance</h3>
-              <p className="text-2xl">{formatCurrency(data[data.length - 1].balanceAfterBet)}</p>
+              <p className="text-2xl">
+                {formatCurrency(data[data.length - 1].balanceAfterBet)}
+              </p>
             </div>
             <div className="p-4 border rounded-lg bg-white shadow">
               <h3 className="text-lg font-semibold mb-2">Total Bets</h3>
@@ -288,17 +329,32 @@ const BettingChart = ({
             </div>
             <div className="p-4 border rounded-lg bg-white shadow">
               <h3 className="text-lg font-semibold mb-2">Profit/Loss</h3>
-              <p className={`text-2xl ${data[data.length - 1].balanceAfterBet - data[0].balanceBeforeBet > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(data[data.length - 1].balanceAfterBet - data[0].balanceBeforeBet)}
+              <p
+                className={`text-2xl ${
+                  data[data.length - 1].balanceAfterBet -
+                    data[0].balanceBeforeBet >
+                  0
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {formatCurrency(
+                  data[data.length - 1].balanceAfterBet -
+                    data[0].balanceBeforeBet
+                )}
               </p>
             </div>
             <div className="p-4 border rounded-lg bg-white shadow">
               <h3 className="text-lg font-semibold mb-2">Max Bet</h3>
-              <p className="text-2xl">{formatCurrency(Math.max(...data.map(bet => bet.amount)))}</p>
+              <p className="text-2xl">
+                {formatCurrency(Math.max(...data.map((bet) => bet.amount)))}
+              </p>
             </div>
             <div className="p-4 border rounded-lg bg-white shadow">
               <h3 className="text-lg font-semibold mb-2">Min Bet</h3>
-              <p className="text-2xl">{formatCurrency(Math.min(...data.map(bet => bet.amount)))}</p>
+              <p className="text-2xl">
+                {formatCurrency(Math.min(...data.map((bet) => bet.amount)))}
+              </p>
             </div>
           </div>
 
@@ -314,26 +370,24 @@ const BettingChart = ({
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="id"
-                />
-                <YAxis 
+                <XAxis dataKey="id" />
+                <YAxis
                   yAxisId="left"
-                  domain={['dataMin - 100', 'dataMax + 100']}
+                  domain={["dataMin - 100", "dataMax + 100"]}
                   tickFormatter={formatCurrency}
                 />
-                <YAxis 
+                <YAxis
                   yAxisId="right"
                   orientation="right"
-                  domain={[0, 'dataMax + 1']}
+                  domain={[0, "dataMax + 1"]}
                   allowDecimals={false}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={(value: any, name: string) => {
-                    if (name === 'Balance' || name === 'Bet Amount') {
+                    if (name === "Balance" || name === "Bet Amount") {
                       return formatCurrency(value);
                     }
-                    if (name === 'Raw Result') {
+                    if (name === "Raw Result") {
                       return value.toFixed(2);
                     }
                     return value;
@@ -373,7 +427,13 @@ const BettingChart = ({
                   type="step"
                   strokeOpacity={0.8}
                   strokeWidth={0.5}
-                  dataKey={(data) => data.betResult === "won" ? 1 : data.betResult === "lost" ? -1 : 0}
+                  dataKey={(data) =>
+                    data.betResult === "won"
+                      ? 1
+                      : data.betResult === "lost"
+                      ? -1
+                      : 0
+                  }
                   stroke="#0047fa"
                   name="Result"
                   yAxisId="right"
