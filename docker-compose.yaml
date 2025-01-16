@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        - PUBLIC_API_URL=http://192.168.178.47:9091
+        - PUBLIC_API_URL=https://api-gambling.ziou.xyz
     ports:
       - "9070:4321"  # Expose frontend to port 9070
     environment:
