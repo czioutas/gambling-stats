@@ -22,7 +22,8 @@ builder.Services.AddCors(options =>
         builder.WithOrigins(
                 "http://localhost:4321",
                 "http://localhost:9070",
-                "http://192.168.178.47:9070"
+                "http://192.168.178.47:9070",
+                "https://gambling.ziou.xyz"
                )
                .AllowAnyMethod()
                .AllowAnyHeader();
