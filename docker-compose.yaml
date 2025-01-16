@@ -6,24 +6,31 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     ports:
-      - "9070:4321"  # Exposing frontend to port 9070
+      - "9070:4321"  # Expose frontend to port 9070
     environment:
       - NODE_ENV=production
-      - API_URL=http://localhost:9091 
-    restart: unless-stopped
+      - VITE_API_URL=http://api:80    restart: unless-stopped
     depends_on:
       - api
+    networks:
+      - app-network  # Attach to the custom network
 
   api:
     build:
       context: .
       dockerfile: api/Dockerfile
     ports:
-      - "9091:80"  # Exposing API on port 9091
+      - "9091:80"  # Expose API on port 9091
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     restart: unless-stopped
+    networks:
+      - app-network  # Attach to the custom network
 
 volumes:
   gambling-db-data:
     driver: local
+
+networks:
+  app-network:  # Define a custom network
+    driver: bridge  # Use bridge driver for communication
