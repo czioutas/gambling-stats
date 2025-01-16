@@ -4,6 +4,7 @@ using Gambling.API;
 using Gambling.Library;
 using Gambling.Library.Games;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,23 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.Services.AddMemoryCache();
+
+// Add Swagger services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Gambling API",
+        Version = "v1",
+        Description = "An API for gambling simulations",
+        Contact = new OpenApiContact
+        {
+            Name = "API Support",
+            Email = "support@gambling.ziou.xyz"
+        }
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -32,13 +50,20 @@ builder.Services.AddCors(options =>
 
 builder.WebHost.UseUrls("http://*:80");
 
-builder.Services.AddOpenApi();
-
 var app = builder.Build();
 
-app.UseCors("AllowAstro");
+// Configure Swagger middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gambling API V1");
+        c.RoutePrefix = "swagger";
+    });
+}
 
-app.MapOpenApi();
+app.UseCors("AllowAstro");
 
 app.UseHttpsRedirection();
 
@@ -116,8 +141,13 @@ app.MapPost("/play", (IMemoryCache cache, GameInputDto gameInputDto) =>
     {
         return Results.BadRequest("An error occured");
     }
-
 })
-.WithName("Play");
+.WithName("Play")
+.WithOpenApi(operation =>
+{
+    operation.Summary = "Play a gambling game";
+    operation.Description = "Simulates a gambling game with the specified parameters and strategy";
+    return operation;
+});
 
 app.Run();
