@@ -5,11 +5,13 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      args:
+        - PUBLIC_API_URL=http://api:80
     ports:
       - "9070:4321"  # Expose frontend to port 9070
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://api:80    
+      - PUBLIC_API_URL=http://api:80    
     restart: unless-stopped
     depends_on:
       - api

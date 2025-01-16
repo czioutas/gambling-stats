@@ -128,7 +128,8 @@ const BettingChart = ({
           : undefined,
       };
 
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:9091'
+      console.log(import.meta.env.PUBLIC_API_URL)
+      const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:9091'
 
       const response = await fetch(apiUrl + "/play", {
         method: "POST",

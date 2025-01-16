@@ -14,6 +14,10 @@ RUN npm ci
 FROM base AS builder
 WORKDIR /app
 
+# Pass the environment variable to the builder stage
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=${PUBLIC_API_URL}
+
 # Copy package files and dependencies from deps stage
 COPY --from=deps /app/package.json ./
 COPY --from=deps /app/package-lock.json* ./
