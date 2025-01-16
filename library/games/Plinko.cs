@@ -57,7 +57,6 @@ public class Plinko : IGamblingGame
 
 
         string combinedSeed = $"{serverSeed}:{clientSeed}:{nonce}";
-        Console.WriteLine(combinedSeed);
 
         using (var sha256 = System.Security.Cryptography.SHA256.Create())
         {
